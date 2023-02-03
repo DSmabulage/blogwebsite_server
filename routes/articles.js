@@ -1,5 +1,26 @@
 const router = require("express").Router();
 const Article = require("../models/article");
+const requireSession = require("../middleware/requireSession");
+
+router.get("/", async (req, res) => {
+  try {
+    const article = await Article.find().sort({ createdAt: "desc" });
+    res.send(article);
+  } catch (e) {
+    res.send(e.message);
+  }
+});
+
+router.get("/:slug", async (req, res) => {
+  try {
+    const article = await Article.findOne({ slug: req.params.slug });
+    res.send(article);
+  } catch (e) {
+    res.send(e.message);
+  }
+});
+
+router.use(requireSession);
 
 router.post("/new", async (req, res) => {
   let article = new Article({
@@ -38,24 +59,6 @@ router.put("/edit/:id", async (req, res) => {
   } catch (error) {
     res.send(error.message);
     console.error(error);
-  }
-});
-
-router.get("/:slug", async (req, res) => {
-  try {
-    const article = await Article.findOne({ slug: req.params.slug });
-    res.send(article);
-  } catch (e) {
-    res.send(e.message);
-  }
-});
-
-router.get("/", async (req, res) => {
-  try {
-    const article = await Article.find().sort({ createdAt: "desc" });
-    res.send(article);
-  } catch (e) {
-    res.send(e.message);
   }
 });
 
