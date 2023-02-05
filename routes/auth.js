@@ -26,6 +26,7 @@ router.post("/login", async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         sameSite: "none",
+        secure: true,
       })
       .status(200)
       .json({ message: "success" });
@@ -66,6 +67,7 @@ router.post("/signup", async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         sameSite: "none",
+        secure: true,
       })
       .status(200)
       .json({ message: "success" });
