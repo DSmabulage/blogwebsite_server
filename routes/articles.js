@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Article = require("../models/article");
-const requireSession = require("../middleware/requireSession");
+const requireToken = require("../middleware/requireToken");
 
 router.get("/", async (req, res) => {
   try {
@@ -20,10 +20,11 @@ router.get("/:slug", async (req, res) => {
   }
 });
 
-router.use(requireSession);
+router.use(requireToken);
 
 router.post("/new", async (req, res) => {
   let article = new Article({
+    user_id: req.user,
     title: req.body.title,
     description: req.body.description,
     markdown: req.body.markdown,
@@ -59,6 +60,16 @@ router.put("/edit/:id", async (req, res) => {
   } catch (error) {
     res.send(error.message);
     console.error(error);
+  }
+});
+
+router.post("/user", async (req, res) => {
+  try {
+    const user_id = req.user;
+    const articles = await Article.find({ user_id }).sort({ createdAt: -1 });
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 
