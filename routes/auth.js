@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { accessToken } = require("../middleware/jwt");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 router.post("/login", async (req, res) => {
   try {
@@ -25,6 +25,7 @@ router.post("/login", async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
+        sameSite: "none",
       })
       .status(200)
       .json({ message: "success" });
@@ -46,7 +47,8 @@ router.post("/signup", async (req, res) => {
 
     const exists = await User.findOne({ email });
 
-    if (exists) return res.status(404).json({ message: "Email already in use" });
+    if (exists)
+      return res.status(404).json({ message: "Email already in use" });
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -63,6 +65,7 @@ router.post("/signup", async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
+        sameSite: "none",
       })
       .status(200)
       .json({ message: "success" });
@@ -75,7 +78,7 @@ router.get("/loggedin", (req, res) => {
   try {
     const { token } = req.cookies;
 
-    if (!token) return res.json(false);  
+    if (!token) return res.json(false);
 
     jwt.verify(token, process.env.ACCESSTOKEN_SECRET);
 
